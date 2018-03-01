@@ -22,8 +22,10 @@ import java.net.URL;
  * 线程将输入流转成字节数组,转换完毕 handler 里 decodeByteArray 将字节数组解码成bitmap
  */
 public class PictureLoader {
+
     private String    imgUrl;
     private ImageView loadImg;
+    private byte[]    picByte;
 
     Handler mHandler = new Handler() {
         @Override
@@ -50,7 +52,6 @@ public class PictureLoader {
         new Thread(mRunnable).start();
     }
 
-    private byte[] picByte;
     Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
