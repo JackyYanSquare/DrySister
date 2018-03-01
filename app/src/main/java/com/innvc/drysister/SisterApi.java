@@ -45,6 +45,8 @@ public class SisterApi {
                 byte[] data = readFromStream(in);
                 String result = new String(data, "UTF-8");
                 sisters = parseSister(result);
+            } else {
+                Log.e(TAG, "fetchSister: 请求失败= " + code);
             }
         } catch (Exception e) {
             e.printStackTrace();
