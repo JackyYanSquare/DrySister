@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PictureLoader     loader;
     private SisterApi         sisterApi;
     private ArrayList<Sister> data;
+    private SisterTask        sisterTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +44,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initUI();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sisterTask.cancel(true);
+    }
+
     private void initData() {
         data = new ArrayList<>();
-        new SisterTask(page).execute();
+        // new SisterTask(page).execute();  // 该方法可能导致内存溢出
         /*data.add("http://ww4.sinaimg.cn/large/610dc034jw1f6ipaai7wgj20dw0kugp4.jpg");
         data.add("http://ww3.sinaimg.cn/large/610dc034jw1f6gcxc1t7vj20hs0hsgo1.jpg");
         data.add("http://ww4.sinaimg.cn/large/610dc034jw1f6f5ktcyk0j20u011hacg.jpg");
@@ -80,17 +87,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_change:
                 page++;
-                new SisterTask(page).execute();
+                sisterTask = new SisterTask();
+                sisterTask.execute();
                 curPos = 0;
                 break;
         }
     }
 
     private class SisterTask extends AsyncTask<Void, Void, ArrayList<Sister>> {
-        private int page;
 
-        public SisterTask(int page) {
-            this.page = page;
+        public SisterTask() {
         }
 
         @Override
@@ -103,6 +109,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             super.onPostExecute(sisters);
             data.clear();
             data.addAll(sisters);
+            page++;
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            sisterTask = null;
         }
     }
 }
