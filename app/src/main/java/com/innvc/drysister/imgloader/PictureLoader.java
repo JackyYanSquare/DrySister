@@ -1,4 +1,4 @@
-package com.innvc.drysister;
+package com.innvc.drysister.imgloader;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

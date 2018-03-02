@@ -1,6 +1,8 @@
-package com.innvc.drysister;
+package com.innvc.drysister.network;
 
 import android.util.Log;
+
+import com.innvc.drysister.bean.entity.Sister;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,6 +57,24 @@ public class SisterApi {
     }
 
     /**
+     * 读取流中数据的方法
+     *
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    private byte[] readFromStream(InputStream in) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[10240];
+        int len;
+        while ((len = in.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, len);
+        }
+        in.close();
+        return outputStream.toByteArray();
+    }
+
+    /**
      * 解析返回Json数据的方法
      *
      * @param content
@@ -79,23 +99,5 @@ public class SisterApi {
             sisters.add(sister);
         }
         return sisters;
-    }
-
-    /**
-     * 读取流中数据的方法
-     *
-     * @param in
-     * @return
-     * @throws IOException
-     */
-    private byte[] readFromStream(InputStream in) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[10240];
-        int len;
-        while ((len = in.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, len);
-        }
-        in.close();
-        return outputStream.toByteArray();
     }
 }

@@ -1,4 +1,4 @@
-package com.innvc.drysister;
+package com.innvc.drysister.bean.entity;
 
 /**
  * @author: Jacky
