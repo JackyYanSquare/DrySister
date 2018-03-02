@@ -81,12 +81,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (curPos > 9) {
                         curPos = 0;
                     }
+                    loader.load(showImg, data.get(curPos).getUrl());
+                    curPos++;
                 }
-                loader.load(showImg, data.get(curPos).getUrl());
-                curPos++;
                 break;
             case R.id.btn_change:
-                page++;
+                // page++;
                 sisterTask = new SisterTask();
                 sisterTask.execute();
                 curPos = 0;
