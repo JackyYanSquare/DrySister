@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.innvc.drysister.R;
@@ -15,6 +16,7 @@ import com.innvc.drysister.imgloader.helper.DiskCacheHelper;
 import com.innvc.drysister.imgloader.helper.MemoryCacheHelper;
 import com.innvc.drysister.imgloader.helper.NetworkHelper;
 import com.innvc.drysister.utils.NetworkUtils;
+import com.innvc.drysister.utils.SizeUtils;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -60,17 +62,30 @@ public class SisterLoader {
             CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
             KEEP_ALIVE, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(), mFactory);
-    private              Handler       mMainHandler         = new Handler(Looper.getMainLooper()) {
+
+    private Handler mMainHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+            LoaderResult result = (LoaderResult) msg.obj;
+            ImageView resultImage = result.img;
+            // 设置图片大小,加载图片
+            ViewGroup.LayoutParams params = resultImage.getLayoutParams();
+            params.width = SizeUtils.dp2px(mContext.getApplicationContext(), result.reqWidth);
+            params.height = SizeUtils.dp2px(mContext.getApplicationContext(), result.reqHeight);
+            resultImage.setLayoutParams(params);
+            String uri = (String) resultImage.getTag(TAG_KEY_URI);
+            if (uri.equals(result.uri)) {
+                resultImage.setImageBitmap(result.bitmap);
+            } else {
+                Log.w(TAG, "URL发生改变，不设置图片");
+            }
         }
     };
 
     public SisterLoader(Context context) {
         mContext = context.getApplicationContext();
         mMemoryHelper = new MemoryCacheHelper(mContext);
-        mDiskHelper = new DiskCacheHelper(context);
+        mDiskHelper = new DiskCacheHelper(mContext);
     }
 
     public static SisterLoader getInstance(Context context) {
@@ -124,7 +139,7 @@ public class SisterLoader {
      * @param reqHeight
      */
     public void bindBitmap(final String url, final ImageView imageView, final int reqWidth, final int reqHeight) {
-        String key = NetworkHelper.hashKeyFormUrl(url);
+        final String key = NetworkHelper.hashKeyFormUrl(url);
         imageView.setTag(TAG_KEY_URI, url);
         Runnable loadBitmapTask = new Runnable() {
             @Override
