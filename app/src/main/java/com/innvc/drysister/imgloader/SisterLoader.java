@@ -115,6 +115,14 @@ public class SisterLoader {
         return bitmap;
     }
 
+    /**
+     * 异步加载图片
+     *
+     * @param url
+     * @param imageView
+     * @param reqWidth
+     * @param reqHeight
+     */
     public void bindBitmap(final String url, final ImageView imageView, final int reqWidth, final int reqHeight) {
         String key = NetworkHelper.hashKeyFormUrl(url);
         imageView.setTag(TAG_KEY_URI, url);
@@ -128,5 +136,6 @@ public class SisterLoader {
                 }
             }
         };
+        THREAD_POOL_EXECUTOR.execute(loadBitmapTask);
     }
 }

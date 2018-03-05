@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.innvc.drysister.R;
 import com.innvc.drysister.bean.entity.Sister;
 import com.innvc.drysister.imgloader.PictureLoader;
+import com.innvc.drysister.imgloader.SisterLoader;
 import com.innvc.drysister.network.SisterApi;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SisterApi         sisterApi;
     private ArrayList<Sister> data;
     private SisterTask        sisterTask;
+    private SisterLoader      mLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         sisterApi = new SisterApi();
         loader = new PictureLoader();
+        mLoader = SisterLoader.getInstance(MainActivity.this);
+        mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
         initData();
         initUI();
     }
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         refreshBtn = findViewById(R.id.btn_change);
         showBtn.setOnClickListener(this);
         refreshBtn.setOnClickListener(this);
+
     }
 
     @Override
