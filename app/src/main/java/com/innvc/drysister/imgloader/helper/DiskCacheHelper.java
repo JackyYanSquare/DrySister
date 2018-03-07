@@ -58,6 +58,7 @@ public class DiskCacheHelper {
      * @param dirName
      * @return
      */
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private File getDiskCacheDir(Context context, String dirName) {
         // 判断机身存储是否可用
         boolean externalStorageAvailable = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);

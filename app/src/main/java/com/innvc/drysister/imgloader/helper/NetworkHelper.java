@@ -36,7 +36,7 @@ public class NetworkHelper {
         try {
             final URL url = new URL(picUrl);
             urlConnection = (HttpURLConnection) url.openConnection();
-            in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE);
+            in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE);  // 获取图像的字符流
             bitmap = BitmapFactory.decodeStream(in);
         } catch (Exception e) {
             Log.e(TAG, "下载图片出错： " + e);

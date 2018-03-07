@@ -16,13 +16,14 @@ public class MemoryCacheHelper {
     private Context                  mContext;
     private LruCache<String, Bitmap> mMemoryCache;
 
-    public MemoryCacheHelper(Context context) {
-        mContext = context;
+    public MemoryCacheHelper(Context mContext) {
+        this.mContext = mContext;
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);  // 获得应用最大内存
         int catchSize = maxMemory / 8;    // 缓存大小
         mMemoryCache = new LruCache<String, Bitmap>(catchSize) {
             @Override
             protected int sizeOf(String key, Bitmap bitmap) {
+                // 重写此方法来衡量每张图片的大小，默认返回图片数量。
                 return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
             }
         };
