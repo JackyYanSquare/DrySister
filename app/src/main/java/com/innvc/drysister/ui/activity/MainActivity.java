@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             sisterApi = new SisterApi();
             loader = new PictureLoader();
-            // mLoader = SisterLoader.getInstance(MainActivity.this);
-            // mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
             initData();
             initUI();
         }
