@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
 
             sisterApi = new SisterApi();
-            // loader = new PictureLoader();
+            loader = new PictureLoader();
             // mLoader = SisterLoader.getInstance(MainActivity.this);
             // mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
             initData();
@@ -85,7 +85,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initData() {
         data = new ArrayList<>();
-        mLoader = SisterLoader.getInstance(MainActivity.this);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (data != null && !data.isEmpty()) {
+                    mLoader = SisterLoader.getInstance(MainActivity.this);
+                    mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
+                }
+            }
+        });
+
         // new SisterTask(page).execute();  // 该方法可能导致内存溢出
         /*data.add("http://ww4.sinaimg.cn/large/610dc034jw1f6ipaai7wgj20dw0kugp4.jpg");
         data.add("http://ww3.sinaimg.cn/large/610dc034jw1f6gcxc1t7vj20hs0hsgo1.jpg");
@@ -105,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         refreshBtn = findViewById(R.id.btn_change);
         showBtn.setOnClickListener(this);
         refreshBtn.setOnClickListener(this);
-        mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
+
     }
 
     @Override

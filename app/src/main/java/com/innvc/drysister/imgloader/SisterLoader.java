@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -47,11 +46,14 @@ public class SisterLoader {
     private final MemoryCacheHelper mMemoryHelper;
     private final DiskCacheHelper   mDiskHelper;
 
+    /**
+     * 线程工厂创建线程
+     */
     private static final ThreadFactory mFactory             = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         @Override
-        public Thread newThread(@NonNull Runnable r) {
+        public Thread newThread(Runnable r) {
             return new Thread(r, "SisterLoader#" + mCount.getAndIncrement());
         }
     };
