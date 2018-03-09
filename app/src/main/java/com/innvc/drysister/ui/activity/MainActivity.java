@@ -1,23 +1,19 @@
 package com.innvc.drysister.ui.activity;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.innvc.drysister.R;
 import com.innvc.drysister.bean.entity.Sister;
+import com.innvc.drysister.db.SisterDBHelper;
 import com.innvc.drysister.imgloader.PictureLoader;
 import com.innvc.drysister.imgloader.SisterLoader;
 import com.innvc.drysister.network.SisterApi;
+import com.innvc.drysister.utils.NetworkUtils;
 
 import java.util.ArrayList;
 
@@ -28,110 +24,72 @@ import java.util.ArrayList;
  * @description: http://www.runoob.com/w3cnote/android-tutorial-exercise-2.html
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private Button    previousBtn;
+    private Button    nextBtn;
+    private ImageView showImg;
 
-    private int curPos = 0;      // 当前显示的是哪一张
-    private int page   = 1;      // 当前页数
-
-    private ImageView         showImg;
-    private Button            showBtn;
-    private Button            refreshBtn;
-    private PictureLoader     loader;
-    private SisterApi         sisterApi;
     private ArrayList<Sister> data;
-    private SisterTask        sisterTask;
-    private SisterLoader      mLoader;
+    private int curPos = 0; //当前显示的是哪一张
+    private int page   = 1;   //当前页数
+    private PictureLoader  loader;
+    private SisterApi      sisterApi;
+    private SisterTask     sisterTask;
+    private SisterLoader   mLoader;
+    private SisterDBHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(MainActivity.this, Manifest
-                .permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission
-                    .WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        } else {
-
-            sisterApi = new SisterApi();
-            loader = new PictureLoader();
-            initData();
-            initUI();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initData();
-                    initUI();
-                } else {
-                    Toast.makeText(this, "haha", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        sisterTask.cancel(true);
+        sisterApi = new SisterApi();
+        loader = new PictureLoader();
+        mLoader = SisterLoader.getInstance(MainActivity.this);
+        mDbHelper = SisterDBHelper.getInstance();
+        initData();
+        initUI();
     }
 
     private void initData() {
         data = new ArrayList<>();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (data != null && !data.isEmpty()) {
-                    mLoader = SisterLoader.getInstance(MainActivity.this);
-                    mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
-                }
-            }
-        });
-
-        // new SisterTask(page).execute();  // 该方法可能导致内存溢出
-        /*data.add("http://ww4.sinaimg.cn/large/610dc034jw1f6ipaai7wgj20dw0kugp4.jpg");
-        data.add("http://ww3.sinaimg.cn/large/610dc034jw1f6gcxc1t7vj20hs0hsgo1.jpg");
-        data.add("http://ww4.sinaimg.cn/large/610dc034jw1f6f5ktcyk0j20u011hacg.jpg");
-        data.add("http://ww1.sinaimg.cn/large/610dc034jw1f6e1f1qmg3j20u00u0djp.jpg");
-        data.add("http://ww3.sinaimg.cn/large/610dc034jw1f6aipo68yvj20qo0qoaee.jpg");
-        data.add("http://ww3.sinaimg.cn/large/610dc034jw1f69c9e22xjj20u011hjuu.jpg");
-        data.add("http://ww3.sinaimg.cn/large/610dc034jw1f689lmaf7qj20u00u00v7.jpg");
-        data.add("http://ww3.sinaimg.cn/large/c85e4a5cjw1f671i8gt1rj20vy0vydsz.jpg");
-        data.add("http://ww2.sinaimg.cn/large/610dc034jw1f65f0oqodoj20qo0hntc9.jpg");
-        data.add("http://ww2.sinaimg.cn/large/c85e4a5cgw1f62hzfvzwwj20hs0qogpo.jpg");*/
+        sisterTask = new SisterTask();
+        sisterTask.execute();
     }
 
     private void initUI() {
-        showImg = findViewById(R.id.iv_img);
-        showBtn = findViewById(R.id.btn_check);
-        refreshBtn = findViewById(R.id.btn_change);
-        showBtn.setOnClickListener(this);
-        refreshBtn.setOnClickListener(this);
+        previousBtn = findViewById(R.id.btn_previous);
+        nextBtn = findViewById(R.id.btn_next);
+        showImg = findViewById(R.id.img_show);
 
+        previousBtn.setOnClickListener(this);
+        nextBtn.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_check:
-                if (data != null && !data.isEmpty()) {
-                    if (curPos > 9) {
-                        curPos = 0;
-                    }
-                    loader.load(showImg, data.get(curPos).getUrl());
-                    curPos++;
+            case R.id.btn_previous:
+                --curPos;
+                if (curPos == 0) {
+                    previousBtn.setVisibility(View.INVISIBLE);
+                }
+                if (curPos == data.size() - 1) {
+                    sisterTask = new SisterTask();
+                    sisterTask.execute();
+                } else if (curPos < data.size()) {
+                    mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
                 }
                 break;
-            case R.id.btn_change:
-                // page++;
-                sisterTask = new SisterTask();
-                sisterTask.execute();
-                curPos = 0;
+            case R.id.btn_next:
+                previousBtn.setVisibility(View.VISIBLE);
+                if (curPos < data.size()) {
+                    ++curPos;
+                }
+                if (curPos > data.size() - 1) {
+                    sisterTask = new SisterTask();
+                    sisterTask.execute();
+                } else if (curPos < data.size()) {
+                    mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
+                }
                 break;
         }
     }
@@ -142,22 +100,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         @Override
-        protected ArrayList<Sister> doInBackground(Void... voids) {
-            return sisterApi.fetchSister(10, page);
+        protected ArrayList<Sister> doInBackground(Void... params) {
+            ArrayList<Sister> result = new ArrayList<>();
+            if (page < (curPos + 1) / 10 + 1) {
+                ++page;
+            }
+            //判断是否有网络
+            if (NetworkUtils.isAvailable(getApplicationContext())) {
+                result = sisterApi.fetchSister(10, page);
+                //查询数据库里有多少个妹子，避免重复插入
+                if (mDbHelper.getSistersCount() / 10 < page) {
+                    mDbHelper.insertSisters(result);
+                }
+            } else {
+                result.clear();
+                result.addAll(mDbHelper.getSistersLimit(page - 1, 10));
+            }
+            return result;
         }
 
         @Override
         protected void onPostExecute(ArrayList<Sister> sisters) {
             super.onPostExecute(sisters);
-            data.clear();
             data.addAll(sisters);
-            page++;
+            if (data.size() > 0 && curPos + 1 < data.size()) {
+                mLoader.bindBitmap(data.get(curPos).getUrl(), showImg, 400, 400);
+            }
         }
 
         @Override
         protected void onCancelled() {
             super.onCancelled();
             sisterTask = null;
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (sisterTask != null) {
+            sisterTask.cancel(true);
         }
     }
 }

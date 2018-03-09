@@ -7,15 +7,23 @@ package com.innvc.drysister.bean.entity;
  * @description:
  */
 public class Sister {
-    private String  _id;
-    private String  createAt;
-    private String  desc;
-    private String  publishedAt;
-    private String  source;
-    private String  type;
-    private String  url;
-    private boolean used;
-    private String  who;
+    private String _id;
+    private String createAt;
+    private String desc;
+    private String publishedAt;
+    private String source;
+    private String type;
+    private String url;
+    private int    used;
+    private String who;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String get_id() {
         return _id;
@@ -57,14 +65,6 @@ public class Sister {
         this.source = source;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -73,11 +73,11 @@ public class Sister {
         this.url = url;
     }
 
-    public boolean isUsed() {
+    public int getUsed() {
         return used;
     }
 
-    public void setUsed(boolean used) {
+    public void setUsed(int used) {
         this.used = used;
     }
 
@@ -87,5 +87,20 @@ public class Sister {
 
     public void setWho(String who) {
         this.who = who;
+    }
+
+    @Override
+    public String toString() {
+        return "Sister{" +
+                "_id='" + _id + '\'' +
+                ", createAt='" + createAt + '\'' +
+                ", desc='" + desc + '\'' +
+                ", publishedAt='" + publishedAt + '\'' +
+                ", source='" + source + '\'' +
+                ", type='" + type + '\'' +
+                ", url='" + url + '\'' +
+                ", used=" + used +
+                ", who='" + who + '\'' +
+                '}';
     }
 }

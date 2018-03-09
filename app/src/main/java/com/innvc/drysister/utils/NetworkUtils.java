@@ -8,7 +8,7 @@ import android.net.NetworkInfo;
  * @author: Jacky
  * @date : 2018/3/5 14:29
  * @Email : aa1986779407@163.com
- * @description: 网络相关工具类
+ * @description: 网络相关工具类 判断网络状态
  */
 public class NetworkUtils {
     /**
@@ -30,6 +30,6 @@ public class NetworkUtils {
      */
     public static boolean isAvailable(Context context) {
         NetworkInfo info = getActiveNetworkInfo(context);
-        return info != null & info.isAvailable();
+        return info != null && info.isAvailable();
     }
 }

@@ -3,6 +3,8 @@ package com.innvc.drysister;
 import android.app.Application;
 import android.content.Context;
 
+import com.innvc.drysister.utils.CrashHandler;
+
 /**
  * @author: Jacky
  * @date : 2018/3/2 10:45
@@ -16,7 +18,7 @@ public class DrySisterApp extends Application {
     public void onCreate() {
         super.onCreate();
         sContext = this;
-        // CrashHandler.getInstance().init(this);
+        CrashHandler.getInstance().init(this);
     }
 
     public static DrySisterApp getContext() {

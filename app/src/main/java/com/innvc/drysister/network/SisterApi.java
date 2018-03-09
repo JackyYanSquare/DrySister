@@ -22,8 +22,11 @@ import java.util.ArrayList;
  * @description: 网络请求处理相关类
  */
 public class SisterApi {
-    private static final String TAG      = "Network";
-    private static final String BASE_URL = "http://gank.io/api/data/福利/";
+    private static final String TAG = "Network";
+    // private static final String BASE_URL = "http://gank.io/api/data/福利/";
+
+    // 中文转码问题，而HttpUrlConnection无法打开含有中文的链接，需要 对中文部分调用URLEncoder.encode(中文部分,"utf-8");进行转码
+    private static final String BASE_URL = "http://gank.io/api/data/%e7%a6%8f%e5%88%a9/";
 
     /**
      * 查询妹子信息
@@ -94,7 +97,7 @@ public class SisterApi {
             sister.setSource(results.getString("source"));
             sister.setType(results.getString("type"));
             sister.setUrl(results.getString("url"));
-            sister.setUsed(results.getBoolean("used"));
+            sister.setUsed(results.getBoolean("used") ? 1 : 0);
             sister.setWho(results.getString("who"));
             sisters.add(sister);
         }

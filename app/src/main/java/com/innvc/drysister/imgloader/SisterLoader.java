@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author: Jacky
  * @date : 2018/3/5 11:57
  * @Email : aa1986779407@163.com
- * @description: 图片加载逻辑控制类：
+ * @description: 图片加载逻辑控制类：异步图片加载缓存框架
  */
 public class SisterLoader {
     private static final String TAG = "SisterLoader";
